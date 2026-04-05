@@ -1,0 +1,24 @@
+.login-wrapper {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+}
+
+.login-card {
+  width: 380px;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.subtitle {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
