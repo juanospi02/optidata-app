@@ -44,10 +44,6 @@ Thumbs.db
 .env
 .env.*
 
-# Keep backend folder tracked
-!optidata-backend/
-!optidata-backend/**
-
 # Backend-specific ignores
 optidata-backend/node_modules/
 optidata-backend/.env
