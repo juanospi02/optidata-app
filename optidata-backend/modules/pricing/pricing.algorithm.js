@@ -1,7 +1,7 @@
 function calculateRecommendedPrice(product) {
   const { cost, totalSales, recentSales } = product;
 
-  const BASE_MARGIN = 1.3;
+  const BASE_MARGIN = 1.8;
   let demandFactor = 1;
 
   if (recentSales > 20) demandFactor = 1.2;

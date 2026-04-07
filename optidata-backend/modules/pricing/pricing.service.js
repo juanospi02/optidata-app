@@ -34,6 +34,14 @@ async function getPricingByProduct(productId) {
         totalSales: product.totalSales || 0,
         recentSales: product.recentSales || 0
       });
+
+      console.log("PRICING DEBUG:", {
+  totalSales: product.totalSales,
+  recentSales: product.recentSales,
+  demandFactor: pricing.demandFactor,
+  recommendedPrice: pricing.recommendedPrice
+});
+
       // Guardar historial de precios
 const insertHistoryQuery = `
   INSERT INTO price_history 
@@ -109,13 +117,13 @@ db.query(lastHistoryQuery, [productId], (err, historyResults) => {
 
   const lastRecord = historyResults[0];
 
-  // 🚫 SI NO CAMBIÓ DEMANDA → NO HACER NADA
-  if (lastRecord && lastRecord.demand_factor == pricing.demandFactor) {
-    return resolve({
-      message: "Sin cambios en demanda, no se actualiza precio",
-      currentPrice: product.current_price
-    });
-  }
+  // // 🚫 SI NO CAMBIÓ DEMANDA → NO HACER NADA
+  // if (lastRecord && lastRecord.demand_factor == pricing.demandFactor) {
+  //   return resolve({
+  //     message: "Sin cambios en demanda, no se actualiza precio",
+  //     currentPrice: product.current_price
+  //   });
+  // }
 
   // 🔥 ACTUALIZAR PRECIO
   const updateQuery = `UPDATE products SET current_price = ? WHERE id = ?`;

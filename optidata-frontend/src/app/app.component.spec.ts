@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'optidata-app' title`, () => {
+  it(`should have the 'optidata-frontend' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('optidata-app');
+    expect(app.title).toEqual('optidata-frontend');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, optidata-app');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, optidata-frontend');
   });
 });
