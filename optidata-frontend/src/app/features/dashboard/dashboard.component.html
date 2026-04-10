@@ -1,0 +1,168 @@
+<!-- Header -->
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Resumen del sistema de pricing inteligente.</p>
+  </div>
+  <button
+    class="btn btn-primary"
+    (click)="applyAll()"
+    [disabled]="applyingAll || loading"
+  >
+    @if (applyingAll) {
+      <span class="spinner-sm"></span> Aplicando...
+    } @else {
+      ⚡ Aplicar Pricing a Todos
+    }
+  </button>
+</div>
+
+@if (loading) {
+  <div class="loading-full">
+    <div class="spinner"></div>
+    <p>Cargando reporte...</p>
+  </div>
+}
+
+@else if (report) {
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Total Productos</span>
+      <span class="stat-value">{{ report.totalProducts }}</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Alertas de Precio</span>
+      <span class="stat-value" [class.stat-danger]="report.pricingAlerts.length > 0">
+        {{ report.pricingAlerts.length }}
+      </span>
+      <span class="stat-sub">vendiendo con pérdida</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Sin Ventas</span>
+      <span class="stat-value stat-muted">{{ countNoSales() }}</span>
+      <span class="stat-sub">productos sin movimiento</span>
+    </div>
+  </div>
+
+  <!-- Alertas de pérdida -->
+  @if (report.pricingAlerts.length > 0) {
+    <div class="alert-section">
+      <div class="alert-header">
+        <span class="alert-badge">⚠ Alerta</span>
+        <h2>Productos vendiendo con pérdida</h2>
+        <p>El precio actual está por debajo del costo. Aplica pricing para corregirlo.</p>
+      </div>
+      <div class="alert-list">
+        @for (p of report.pricingAlerts; track p.id) {
+          <div class="alert-item">
+            <span class="alert-name">{{ p.name }}</span>
+            <div class="alert-prices">
+              <span class="alert-cost">Costo: ${{ p.cost | number:'1.2-2' }}</span>
+              <span class="alert-price">Precio actual: ${{ p.current_price | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Tablas -->
+  <div class="tables-grid">
+
+    <!-- Top Ventas -->
+    <div class="card">
+      <div class="table-title">
+        <span class="title-icon success">↑</span>
+        <div>
+          <h3>Top Vendidos</h3>
+          <p>Productos con mayor demanda</p>
+        </div>
+      </div>
+      @if (report.topSelling.length === 0) {
+        <p class="empty-msg">Sin datos de ventas aún.</p>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Producto</th>
+              <th class="col-num">Unidades</th>
+              <th class="col-num">Precio</th>
+              <th class="col-num">Margen</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of report.topSelling; track p.id; let i = $index) {
+              <tr>
+                <td><span class="rank rank-{{ i + 1 }}">{{ i + 1 }}</span></td>
+                <td class="product-name">{{ p.name }}</td>
+                <td class="col-num">{{ p.totalQuantity ?? 0 }}</td>
+                <td class="col-num">${{ p.current_price | number:'1.2-2' }}</td>
+                <td class="col-num">
+                  <span class="margin-badge"
+                    [class.margin-positive]="marginOf(p) >= 0"
+                    [class.margin-negative]="marginOf(p) < 0">
+                    {{ marginOf(p) | number:'1.0-1' }}%
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <!-- Baja Demanda -->
+    <div class="card">
+      <div class="table-title">
+        <span class="title-icon warning">↓</span>
+        <div>
+          <h3>Baja Demanda</h3>
+          <p>Productos con menos movimiento</p>
+        </div>
+      </div>
+      @if (report.lowSelling.length === 0) {
+        <p class="empty-msg">Sin datos aún.</p>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th class="col-num">Unidades</th>
+              <th class="col-num">Precio</th>
+              <th class="col-num">Margen</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of report.lowSelling; track p.id) {
+              <tr>
+                <td class="product-name">{{ p.name }}</td>
+                <td class="col-num text-muted">{{ p.totalQuantity ?? 0 }}</td>
+                <td class="col-num">${{ p.current_price | number:'1.2-2' }}</td>
+                <td class="col-num">
+                  <span class="margin-badge"
+                    [class.margin-positive]="marginOf(p) >= 0"
+                    [class.margin-negative]="marginOf(p) < 0">
+                    {{ marginOf(p) | number:'1.0-1' }}%
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-actions">
+    <button class="btn btn-secondary" (click)="loadReport()">↺ Actualizar reporte</button>
+    <a routerLink="/productos" class="btn btn-secondary">Ver Productos</a>
+  </div>
+
+}

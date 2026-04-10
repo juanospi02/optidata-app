@@ -1,1 +1,180 @@
-/* You can add global styles to this file, and also import other style files */
+/* ─── Variables ─────────────────────────────────────────────── */
+:root {
+  --primary:        #2563eb;
+  --primary-dark:   #1d4ed8;
+  --primary-light:  #eff6ff;
+  --success:        #059669;
+  --success-light:  #ecfdf5;
+  --danger:         #dc2626;
+  --danger-light:   #fef2f2;
+  --warning:        #d97706;
+  --warning-light:  #fffbeb;
+
+  --nav-bg:         #0f172a;
+  --nav-text:       #94a3b8;
+  --nav-active:     #ffffff;
+
+  --bg:             #f1f5f9;
+  --surface:        #ffffff;
+  --border:         #e2e8f0;
+  --border-strong:  #cbd5e1;
+
+  --text:           #0f172a;
+  --text-muted:     #64748b;
+  --text-light:     #94a3b8;
+
+  --radius-sm:      6px;
+  --radius:         10px;
+  --radius-lg:      14px;
+
+  --shadow-sm:      0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:         0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg:      0 10px 32px rgba(0,0,0,.12);
+}
+
+/* ─── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ─── Shared Buttons ─────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger-light);
+}
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+.btn-success:hover:not(:disabled) {
+  background: #047857;
+  border-color: #047857;
+}
+
+/* ─── Shared Input ───────────────────────────────────────────── */
+.input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+.input.invalid {
+  border-color: var(--danger);
+}
+.input.invalid:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, .12);
+}
+
+/* ─── Shared Card ────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* ─── Page Header ────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+.page-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.3px;
+}
+.page-header p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ─── Spinner ────────────────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+/* ─── Price Changed ──────────────────────────────────────────── */
+@keyframes priceGlow {
+  0%   { background: var(--success-light); color: var(--success); transform: scale(1.08); }
+  70%  { background: var(--success-light); color: var(--success); transform: scale(1.05); }
+  100% { background: transparent; color: inherit; transform: scale(1); }
+}
+.price-changed {
+  animation: priceGlow 3s ease forwards;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 600;
+}

@@ -1,0 +1,178 @@
+<!-- Encabezado -->
+<div class="page-header">
+  <div>
+    <h1>Productos</h1>
+    <p>Gestiona tu inventario y registra ventas para activar el pricing dinámico.</p>
+  </div>
+  <a routerLink="/crear-producto" class="btn btn-primary">+ Nuevo Producto</a>
+</div>
+
+<!-- Tabla -->
+<div class="card">
+
+  @if (loading) {
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p class="state-text">Cargando productos...</p>
+    </div>
+  }
+
+  @else if (products.length === 0) {
+    <div class="state-container">
+      <div class="empty-icon">📦</div>
+      <p class="state-title">Sin productos registrados</p>
+      <p class="state-text">Crea tu primer producto para comenzar.</p>
+      <a routerLink="/crear-producto" class="btn btn-primary" style="margin-top:12px">Crear producto</a>
+    </div>
+  }
+
+  @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th class="col-num">Costo</th>
+          <th class="col-num">Precio Actual</th>
+          <th class="col-num">Margen</th>
+          <th class="col-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (product of products; track product.id) {
+          <tr>
+            <td class="product-name">{{ product.name }}</td>
+
+            <td class="col-num text-muted">
+              ${{ product.cost | number:'1.2-2' }}
+            </td>
+
+            <td class="col-num">
+              <span class="price-tag" [class.price-changed]="priceChangedIds.has(product.id)">
+                ${{ product.current_price | number:'1.2-2' }}
+              </span>
+            </td>
+
+            <td class="col-num">
+              <span class="margin-badge"
+                [class.margin-positive]="getMargin(product) >= 0"
+                [class.margin-negative]="getMargin(product) < 0">
+                {{ getMargin(product) | number:'1.0-1' }}%
+              </span>
+            </td>
+
+            <td class="col-actions">
+              <div class="action-group">
+                <button class="btn btn-success btn-sm" (click)="openSaleModal(product)">Vender</button>
+                <button class="btn btn-outline btn-sm"  (click)="openEditModal(product)">Editar</button>
+                <button class="btn btn-danger btn-sm"   (click)="deleteProduct(product)">Eliminar</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="table-footer">
+      {{ products.length }} producto{{ products.length === 1 ? '' : 's' }} en total
+    </div>
+  }
+</div>
+
+<!-- ── Modal de Venta ────────────────────────────────────────── -->
+@if (showSaleModal) {
+  <div class="modal-overlay" (click)="closeSaleModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Registrar Venta</h2>
+          <p class="modal-subtitle">{{ selectedProduct?.name }}</p>
+        </div>
+        <button class="modal-close" (click)="closeSaleModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="sale-info">
+          <div class="sale-info-item">
+            <span class="info-label">Costo</span>
+            <span class="info-value">${{ selectedProduct?.cost | number:'1.2-2' }}</span>
+          </div>
+          <div class="sale-info-item">
+            <span class="info-label">Precio Actual</span>
+            <span class="info-value highlight">${{ selectedProduct?.current_price | number:'1.2-2' }}</span>
+          </div>
+          <div class="sale-info-item">
+            <span class="info-label">Total estimado</span>
+            <span class="info-value">${{ (selectedProduct?.current_price ?? 0) * saleQuantity | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="saleQty">Cantidad a vender</label>
+          <input id="saleQty" type="number" class="input"
+            [(ngModel)]="saleQuantity" min="1" placeholder="Ej. 5" />
+          <small class="form-hint">El precio se ajustará automáticamente tras la venta.</small>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeSaleModal()" [disabled]="saleLoading">Cancelar</button>
+        <button class="btn btn-primary" (click)="confirmSale()" [disabled]="saleLoading || saleQuantity < 1">
+          @if (saleLoading) { <span class="spinner-sm"></span> Procesando... }
+          @else { Confirmar Venta }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ── Modal de Edición ──────────────────────────────────────── -->
+@if (showEditModal) {
+  <div class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Editar Producto</h2>
+          <p class="modal-subtitle">Modifica los datos del producto</p>
+        </div>
+        <button class="modal-close" (click)="closeEditModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-field">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="input" [(ngModel)]="editForm.name" placeholder="Nombre del producto" />
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label">Costo</label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">$</span>
+              <input type="number" class="input with-prefix"
+                [(ngModel)]="editForm.cost" min="0.01" step="0.01" placeholder="0.00" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Precio de venta</label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">$</span>
+              <input type="number" class="input with-prefix"
+                [(ngModel)]="editForm.current_price" min="0.01" step="0.01" placeholder="0.00" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeEditModal()" [disabled]="editLoading">Cancelar</button>
+        <button class="btn btn-primary" (click)="saveEdit()" [disabled]="editLoading">
+          @if (editLoading) { <span class="spinner-sm"></span> Guardando... }
+          @else { Guardar Cambios }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

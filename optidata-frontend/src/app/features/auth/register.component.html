@@ -1,0 +1,60 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <!-- Brand -->
+    <div class="auth-brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <span>OptiData</span>
+    </div>
+
+    <h1 class="auth-title">Crear cuenta</h1>
+    <p class="auth-subtitle">Registrate para gestionar tu pricing inteligente.</p>
+
+    @if (errorMsg) {
+      <div class="auth-error">⚠ {{ errorMsg }}</div>
+    }
+
+    <form (ngSubmit)="submit()" novalidate>
+
+      <div class="form-field">
+        <label class="form-label">Nombre completo</label>
+        <input type="text" class="input" [(ngModel)]="form.name"
+          name="name" placeholder="Juan García" autocomplete="name" />
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="input" [(ngModel)]="form.email"
+          name="email" placeholder="tu@email.com" autocomplete="email" />
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="input" [(ngModel)]="form.password"
+          name="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Confirmar contraseña</label>
+        <input type="password" class="input" [(ngModel)]="form.confirmPassword"
+          name="confirmPassword" placeholder="Repite tu contraseña" autocomplete="new-password" />
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
+        @if (loading) { <span class="spinner-sm"></span> Creando cuenta... }
+        @else { Crear cuenta }
+      </button>
+
+    </form>
+
+    <p class="auth-footer">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login">Inicia sesión</a>
+    </p>
+
+  </div>
+</div>

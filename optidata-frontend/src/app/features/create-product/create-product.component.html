@@ -1,0 +1,129 @@
+<!-- Encabezado de página -->
+<div class="page-header">
+  <div>
+    <h1>Nuevo Producto</h1>
+    <p>Completa los datos para agregar un producto al inventario.</p>
+  </div>
+  <a routerLink="/productos" class="btn btn-secondary">
+    ← Volver a Productos
+  </a>
+</div>
+
+<!-- Formulario -->
+<div class="form-card card">
+  <form #productForm="ngForm" (ngSubmit)="submit(productForm)" novalidate>
+
+    <!-- Error global -->
+    @if (errorMsg) {
+      <div class="alert-error">
+        <span>⚠</span> {{ errorMsg }}
+      </div>
+    }
+
+    <!-- Nombre -->
+    <div class="form-field">
+      <label class="form-label" for="name">
+        Nombre del producto <span class="required">*</span>
+      </label>
+      <input
+        id="name"
+        name="name"
+        type="text"
+        class="input"
+        [class.invalid]="submitted && productName.invalid"
+        [(ngModel)]="product.name"
+        #productName="ngModel"
+        required
+        maxlength="120"
+        placeholder="Ej. Café molido 500g"
+        autocomplete="off"
+      />
+      @if (submitted && productName.errors?.['required']) {
+        <span class="field-error">El nombre es obligatorio.</span>
+      }
+    </div>
+
+    <!-- Costo -->
+    <div class="form-field">
+      <label class="form-label" for="cost">
+        Costo <span class="required">*</span>
+      </label>
+      <div class="input-prefix-wrapper">
+        <span class="input-prefix">$</span>
+        <input
+          id="cost"
+          name="cost"
+          type="number"
+          class="input with-prefix"
+          [class.invalid]="submitted && (productCost.invalid || (product.cost !== null && product.cost <= 0))"
+          [(ngModel)]="product.cost"
+          #productCost="ngModel"
+          required
+          min="0.01"
+          step="0.01"
+          placeholder="0.00"
+        />
+      </div>
+      @if (submitted && productCost.errors?.['required']) {
+        <span class="field-error">El costo es obligatorio.</span>
+      } @else if (submitted && product.cost !== null && product.cost <= 0) {
+        <span class="field-error">El costo debe ser mayor a 0.</span>
+      }
+      <small class="field-hint">Precio al que adquieres el producto.</small>
+    </div>
+
+    <!-- Precio actual -->
+    <div class="form-field">
+      <label class="form-label" for="current_price">
+        Precio de venta <span class="required">*</span>
+      </label>
+      <div class="input-prefix-wrapper">
+        <span class="input-prefix">$</span>
+        <input
+          id="current_price"
+          name="current_price"
+          type="number"
+          class="input with-prefix"
+          [class.invalid]="submitted && (productPrice.invalid || (product.current_price !== null && product.current_price <= 0))"
+          [(ngModel)]="product.current_price"
+          #productPrice="ngModel"
+          required
+          min="0.01"
+          step="0.01"
+          placeholder="0.00"
+        />
+      </div>
+      @if (submitted && productPrice.errors?.['required']) {
+        <span class="field-error">El precio es obligatorio.</span>
+      } @else if (submitted && product.current_price !== null && product.current_price <= 0) {
+        <span class="field-error">El precio debe ser mayor a 0.</span>
+      }
+      <small class="field-hint">Precio inicial de venta al cliente. El sistema lo ajustará automáticamente.</small>
+    </div>
+
+    <!-- Separador -->
+    <div class="divider"></div>
+
+    <!-- Acciones -->
+    <div class="form-actions">
+      <a routerLink="/productos" class="btn btn-secondary" [class.disabled]="loading">
+        Cancelar
+      </a>
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner-sm"></span> Guardando...
+        } @else {
+          Guardar Producto
+        }
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<!-- Nota informativa -->
+<div class="info-note">
+  <span class="info-icon">ℹ</span>
+  <p>El precio de venta se ajustará automáticamente cada vez que se registre una venta,
+     basándose en la demanda del producto.</p>
+</div>

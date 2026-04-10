@@ -1,0 +1,52 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <!-- Brand -->
+    <div class="auth-brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <span>OptiData</span>
+    </div>
+
+    <h1 class="auth-title">Iniciar sesión</h1>
+    <p class="auth-subtitle">Accede a tu sistema de pricing inteligente.</p>
+
+    @if (errorMsg) {
+      <div class="auth-error">⚠ {{ errorMsg }}</div>
+    }
+
+    <form (ngSubmit)="submit()" novalidate>
+
+      <div class="form-field">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="input" [(ngModel)]="form.email"
+          name="email" placeholder="tu@email.com" autocomplete="email" />
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="input" [(ngModel)]="form.password"
+          name="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
+        @if (loading) { <span class="spinner-sm"></span> Ingresando... }
+        @else { Ingresar }
+      </button>
+
+      <div class="forgot-link">
+        <a routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
+      </div>
+
+    </form>
+
+    <p class="auth-footer">
+      ¿No tienes cuenta?
+      <a routerLink="/register">Regístrate aquí</a>
+    </p>
+
+  </div>
+</div>
