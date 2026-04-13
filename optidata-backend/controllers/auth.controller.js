@@ -24,6 +24,9 @@ const jwt     = require("jsonwebtoken");
 const crypto  = require("crypto");
 const { sendResetEmail } = require("../config/mailer");
 
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+const PASSWORD_MSG   = "La contraseña debe tener al menos una mayúscula, una minúscula, un número y un carácter especial.";
+
 // ── REGISTRO ────────────────────────────────────────────────────
 /**
  * POST /api/auth/register
@@ -35,7 +38,10 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Verificar si el email ya está registrado
+    if (!PASSWORD_REGEX.test(password))
+    return res.status(400).json({ message: PASSWORD_MSG });
+
+  // Verificar si el email ya está registrado
     db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
       if (err) return res.status(500).json(err);
 
@@ -172,8 +178,8 @@ exports.changePassword = async (req, res) => {
   if (!currentPassword || !newPassword)
     return res.status(400).json({ message: "Completa todos los campos." });
 
-  if (newPassword.length < 6)
-    return res.status(400).json({ message: "La nueva contraseña debe tener al menos 6 caracteres." });
+  if (!PASSWORD_REGEX.test(newPassword))
+    return res.status(400).json({ message: PASSWORD_MSG });
 
   // Obtener el hash actual para compararlo con la contraseña ingresada
   db.query("SELECT password_hash FROM users WHERE id = ?", [userId], async (err, results) => {
@@ -279,8 +285,8 @@ exports.resetPassword = async (req, res) => {
   if (!token || !password)
     return res.status(400).json({ message: "Token y contraseña son obligatorios." });
 
-  if (password.length < 6)
-    return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres." });
+  if (!PASSWORD_REGEX.test(password))
+    return res.status(400).json({ message: PASSWORD_MSG });
 
   // Buscar el token en la BD y verificar que no haya expirado (expires_at > NOW())
   db.query(

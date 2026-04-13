@@ -108,14 +108,30 @@ exports.deleteProduct = (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
 
+  // Verificar que el producto pertenece al usuario
   db.query(
-    "DELETE FROM products WHERE id = ? AND user_id = ?",
+    "SELECT id FROM products WHERE id = ? AND user_id = ?",
     [id, userId],
-    (err, result) => {
+    (err, results) => {
       if (err) return res.status(500).json(err);
-      if (result.affectedRows === 0)
+      if (results.length === 0)
         return res.status(404).json({ message: "Producto no encontrado" });
-      res.json({ message: "Producto eliminado" });
+
+      // Borrar historial de precios
+      db.query("DELETE FROM price_history WHERE product_id = ?", [id], (err2) => {
+        if (err2) return res.status(500).json(err2);
+
+        // Borrar ventas asociadas
+        db.query("DELETE FROM sales WHERE product_id = ?", [id], (err3) => {
+          if (err3) return res.status(500).json(err3);
+
+          // Ahora sí borrar el producto
+          db.query("DELETE FROM products WHERE id = ?", [id], (err4) => {
+            if (err4) return res.status(500).json(err4);
+            res.json({ message: "Producto eliminado" });
+          });
+        });
+      });
     }
   );
 };

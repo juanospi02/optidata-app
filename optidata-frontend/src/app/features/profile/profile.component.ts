@@ -92,13 +92,17 @@ export class ProfileComponent implements OnInit {
   }
 
   // ── Cambio de contraseña ─────────────────────────────────────
+  private isPasswordValid(pwd: string): boolean {
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(pwd);
+  }
+
   submitPasswordChange(): void {
     if (!this.passwords.current || !this.passwords.new || !this.passwords.confirm) {
       this.toast.warning('Completa todos los campos de contraseña.');
       return;
     }
-    if (this.passwords.new.length < 6) {
-      this.toast.warning('La nueva contraseña debe tener al menos 6 caracteres.');
+    if (!this.isPasswordValid(this.passwords.new)) {
+      this.toast.warning('La contraseña debe tener al menos una mayúscula, una minúscula, un número y un carácter especial.');
       return;
     }
     if (this.passwords.new !== this.passwords.confirm) {

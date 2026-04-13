@@ -31,13 +31,17 @@ export class ResetPasswordComponent implements OnInit {
     }
   }
 
+  private isPasswordValid(pwd: string): boolean {
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(pwd);
+  }
+
   submit(): void {
     if (!this.form.password || !this.form.confirmPassword) {
       this.errorMsg = 'Completa todos los campos.';
       return;
     }
-    if (this.form.password.length < 6) {
-      this.errorMsg = 'La contraseña debe tener al menos 6 caracteres.';
+    if (!this.isPasswordValid(this.form.password)) {
+      this.errorMsg = 'La contraseña debe tener al menos una mayúscula, una minúscula, un número y un carácter especial.';
       return;
     }
     if (this.form.password !== this.form.confirmPassword) {
